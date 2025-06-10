@@ -40,11 +40,11 @@ BAR_BACKGROUND = (100, 100, 100) #gris oscuro
 STATUS_UPDATE_INTERVAL = 1000
 
 #sitema dia/noche
-DAY_LENGTH = 24000      #duracion del dia completo en milisegundos
-DAWN_TIME = 6000        #amanecer a las 6:00
-MORNING_TIME = 8000     #mañana completa a las 8:00
-DUKS_TIME = 18000       #aterdecer a las 18:00
-MIDNIGHT = 24000        #medianoche (00:00)
+DAY_LENGTH = 240000      #duracion del dia completo en milisegundos
+DAWN_TIME = 60000        #amanecer a las 6:00
+MORNING_TIME = 80000     #mañana completa a las 8:00
+DUKS_TIME = 180000       #aterdecer a las 18:00
+MIDNIGHT = 240000        #medianoche (00:00)
 MAX_DARKNESS = 210      #nivel maximo de oscuridad (0-255)
 
 #colores para iluminacion
@@ -87,7 +87,7 @@ INVENTORY_Y = (HEIGHT - (SLOT_SIZE * INVENTORY_ROWS)) // 2
 CRAFTING_GRID_SIZE = 2
 CRAFTING_RESULT_SLOT_X = INVENTORY_X + (SLOT_SIZE * (INVENTORY_COLS + 1))
 CRAFTING_RESULT_SLOT_Y = INVENTORY_Y
-CRAFTING_GRID_X = INVENTORY_X + (SLOT_SIZE * (INVENTORY_ROWS + 1))
+CRAFTING_GRID_X = INVENTORY_X + (SLOT_SIZE * (INVENTORY_COLS + 1))
 CRAFTING_GRID_Y = INVENTORY_Y + SLOT_SIZE * 2
 
 #colors for inventory

@@ -32,8 +32,8 @@ class Inventory:
         #definir recetas de crafteo
         self.recipes = {
             'axe' : {
-                'pattern' : [('wood', 'stone'), (None, None)],
-                'result' : 'axe'
+                'pattern': [('wood', 'stone'), (None, None)],
+                'result': 'axe'
             }
         }
 
@@ -161,22 +161,22 @@ class Inventory:
                     return True
 
         #verificar click en la cuadricula de crafteo
-        if constants.CRAFTING_GRID_Y <= mouse_y <= constants.CRAFTING_GRID_Y(constants.CRAFTING_GRID_SIZE * constants.SLOT_SIZE):
+        if constants.CRAFTING_GRID_Y <= mouse_y <= constants.CRAFTING_GRID_Y + (constants.CRAFTING_GRID_SIZE * constants.SLOT_SIZE):
             row = (mouse_y - constants.CRAFTING_GRID_Y) // constants.SLOT_SIZE
             col = (mouse_x - constants.CRAFTING_GRID_X) // constants.SLOT_SIZE
             if(0 <= row < constants.CRAFTING_GRID_SIZE and 0 <= col < constants.CRAFTING_GRID_SIZE):
                 self._handle_crafting_grid_click(button, row, col)
                 return True
 
+        #verificar click en el slot de resultado
         if (constants.CRAFTING_RESULT_SLOT_X <= mouse_x <= constants.CRAFTING_RESULT_SLOT_X + constants.SLOT_SIZE and
-            constants.CRAFTING_RESULT_SLOT_Y <= mouse_y <= constants.CRAFTING_RESULT_SLOT_Y + constants.SLOT_SIZE):
-            self._handle_crafting_grid_click(button)
+                constants.CRAFTING_RESULT_SLOT_Y <= mouse_y <= constants.CRAFTING_RESULT_SLOT_Y + constants.SLOT_SIZE):
+            self._handle_crafting_result_click(button)
             return True
 
         #click afuera de los slots
         if self.dragged_item and button == 1:
             self._return_dragged_item()
-
         return False
 
     def _handle_slot_click(self, button, slot_list, index, slot_x, slot_y):
@@ -247,8 +247,8 @@ class Inventory:
         #dibujar cuadricula de crafteo
         for row in range(constants.CRAFTING_GRID_SIZE):
             for col in range(constants.CRAFTING_GRID_SIZE):
-                x = constants.CRAFTING_GRID_X + (col * constants.CRAFTING_GRID_SIZE)
-                y = constants.CRAFTING_GRID_Y + (row * constants.CRAFTING_GRID_SIZE)
+                x = constants.CRAFTING_GRID_X + (col * constants.SLOT_SIZE)
+                y = constants.CRAFTING_GRID_Y + (row * constants.SLOT_SIZE)
 
                 #dibujar fondo del slot
                 pygame.draw.rect(screen, constants.SLOT_BORDER, (x, y, constants.SLOT_SIZE, constants.SLOT_SIZE))
@@ -256,8 +256,7 @@ class Inventory:
 
                 #bibujar item si existe
                 if self.crafting_grid[row][col]:
-                    pass
-                self._draw_item(screen, self.crafting_grid[row][col], x, y)
+                    self._draw_item(screen, self.crafting_grid[row][col], x, y)
 
         #dibujar slot de resultados
         pygame.draw.rect(screen, constants.SLOT_BORDER,
@@ -286,7 +285,7 @@ class Inventory:
                 self.dragged_item = self.crafting_grid[row][col]
                 self.crafting_grid[row][col] = None
 
-            #verificar receta despues del cambio
+            #verificar receta despues de cada cambio
             self._check_recipe()
 
     def _handle_crafting_result_click(self, button):
