@@ -49,8 +49,6 @@ class Character:
         self.stamina = constants.MAX_STAMINA
 
 
-
-
     def load_animations(self):
         animations = {}
         for state in range(6): #6 animations states
@@ -58,7 +56,6 @@ class Character:
             for frame in range(BASIC_FRAMES): #6 frames per animation
                 temp_surface = pygame.Surface((self.frame_size ,self.frame_size), pygame.SRCALPHA)
                 temp_surface.blit(self.sprite_sheet, (0, 0), (frame * self.frame_size, state * self.frame_size, self.frame_size, self.frame_size))
-
 
                 #create final surface at player size
                 surface = pygame.Surface((constants.PLAYER, constants.PLAYER), pygame.SRCALPHA)
@@ -99,14 +96,14 @@ class Character:
                 temp_surface.blit(self.action_sprite_sheet, (0, 0), frame_rect)
 
                 #calculate the proper size for action frames
-                actions_scale = constants.ACTION_FRAME_SIZE / constants.FRAME_SIZE
-                actions_size = int(constants.PLAYER * actions_scale)
+                action_scale = constants.ACTION_FRAME_SIZE / constants.FRAME_SIZE
+                action_size = int(constants.PLAYER * action_scale)
 
                 #create the final surface at the scaled action size
-                surface = pygame.Surface((actions_size, actions_size), pygame.SRCALPHA)
+                surface = pygame.Surface((action_size, action_size), pygame.SRCALPHA)
 
                 #scale and blit the temp surface onto the final surface
-                scaled_temp = pygame.transform.scale(temp_surface, (actions_size, actions_size))
+                scaled_temp = pygame.transform.scale(temp_surface, (action_size, action_size))
                 surface.blit(scaled_temp, (0, 0))
 
                 frames.append(surface)
@@ -152,6 +149,7 @@ class Character:
             current_frame = self.animations[self.current_state][self.animation_frame]
             if self.facing_left:
                 current_frame = pygame.transform.flip(current_frame, True, False)
+
         if self.is_chopping:
             action_scale = constants.ACTION_FRAME_SIZE / constants.FRAME_SIZE
             size_diff = int(constants.PLAYER * (action_scale - 1))

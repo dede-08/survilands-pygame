@@ -171,7 +171,7 @@ class Inventory:
         #verificar slots de manos primero
         if constants.HOTBAR_Y <= mouse_y <= constants.HOTBAR_Y + constants.SLOT_SIZE:
             #slot de mano izquierda
-            if (constants.LEFT_HAND_SLOT_X <= mouse_x <= constants.RIGHT_HAND_SLOT_X + constants.SLOT_SIZE):
+            if (constants.LEFT_HAND_SLOT_X <= mouse_x <= constants.LEFT_HAND_SLOT_X + constants.SLOT_SIZE):
                 self._handle_hand_slot_click(button, 'left')
                 return True
             #slot de mano derecha

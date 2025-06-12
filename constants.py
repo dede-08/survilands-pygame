@@ -102,7 +102,6 @@ AXE_COLS = 2
 AXE_FRAMES = 2
 AXE_ANIMATION_DELAY = 200
 
-
 #colors for inventory
 SLOT_COLOR = (139, 139, 139)        #gray
 SLOT_BORDER = (100, 100, 100)       #darker gray
