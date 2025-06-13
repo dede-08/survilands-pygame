@@ -28,7 +28,8 @@ class Inventory:
         self.item_images = {
             'wood': os.path.join('assets', 'images', 'objects', 'wood.png'),
             'stone': os.path.join('assets', 'images', 'objects', 'small_stone2.png'),
-            'axe': os.path.join('assets', 'images', 'objects', 'axe.png')
+            'axe': os.path.join('assets', 'images', 'objects', 'axe.png'),
+            'hoe': os.path.join('assets', 'images', 'objects', 'hoe.png')
         }
 
         #definir recetas de crafteo
@@ -36,6 +37,10 @@ class Inventory:
             'axe' : {
                 'pattern': [('wood', 'stone'), (None, None)],
                 'result': 'axe'
+            },
+            'hoe' : {
+                'pattern': [('stone', 'wood'), (None, None)],
+                'result': 'hoe'
             }
         }
 
