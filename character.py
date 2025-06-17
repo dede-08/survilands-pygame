@@ -285,6 +285,8 @@ class Character:
             self.is_hoeing = True
             self.hoe_timer = pygame.time.get_ticks()
             self.hoe_frame = 0
+            #intentar crear tierra de cultivo en la posicion actual
+            world.add_farmland(self.x, self.y)
             return
 
         for tree in world.trees:

@@ -1,6 +1,6 @@
 import pygame
 import constants
-from elements import Tree, SmallStone
+from elements import Tree, SmallStone, FarmLand
 import random
 import os
 from pygame import Surface
@@ -13,6 +13,7 @@ class WorldChunk:
         self.y = y
         self.width = width
         self.height = height
+        self.farmland_tiles = {}
 
         #crear una semilla unica basada en las coordenadas del chunk
         chunk_seed = hash(f"{x},{y}")
@@ -52,9 +53,16 @@ class WorldChunk:
 
         for y in range(int(start_y), int(end_y)):
             for x in range(int(start_x), int(end_X)):
-                screen_x = self.x + x * constants.GRASS - camera_x
-                screen_y = self.y + y * constants.GRASS - camera_y
-                screen.blit(grass_image, (screen_x, screen_y))
+                tile_x = self.x + x * constants.GRASS
+                tile_y = self.y + y * constants.GRASS
+                screen_x = tile_x - camera_x
+                screen_y = tile_y - camera_y
+
+                tile_key = (tile_x, tile_y)
+                if tile_key in self.farmland_tiles:
+                    self.farmland_tiles[tile_key].draw(screen, camera_x, camera_y)
+                else:
+                    screen.blit(grass_image, (screen_x, screen_y))
 
         #remover elementos agotados
         self.trees = [tree for tree in self.trees if not tree.is_depleted()]
@@ -190,3 +198,33 @@ class World:
         for chunk in self.active_chunks.values():
             all_stones.extend(chunk.small_stones)
         return all_stones
+
+    def add_farmland(self, x, y):
+        """añade un tile de tierra cultivada en la posicion especifica"""
+        #obtener el chunk correspondiente a la posicion
+        chunk_key = self.get_chunk_key(x, y)
+        chunk = self.active_chunks.get(chunk_key)
+
+        if chunk:
+            #alinear la posicion a la cuadricula
+            grid_x = (x // constants.GRASS) * constants.GRASS
+            grid_y = (y // constants.GRASS) * constants.GRASS
+
+            #verificar si hay arboles o piedras en esta posicion
+            for tree in chunk.trees:
+                if(grid_x < tree.x + tree.size and grid_x + constants.GRASS > tree.x and
+                    grid_y < tree.y + tree.size and grid_y + constants.GRASS > tree.y):
+                    return False
+
+            for stone in chunk.small_stones:
+                if(grid_x < stone.x + stone.size and grid_x + constants.GRASS > stone.x and
+                    grid_y < stone.y + stone.size and grid_y + constants.GRASS > stone.y):
+                    return False
+
+            #si no hay obstaculos, crear el tile de farmland
+            from elements import FarmLand
+            tile_key = (grid_x, grid_y)
+            if tile_key not in chunk.farmland_tiles:
+                chunk.farmland_tiles[tile_key] = FarmLand(grid_x, grid_y)
+            return True
+        return False
