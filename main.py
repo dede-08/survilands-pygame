@@ -16,6 +16,7 @@ def main():
     world = World(constants.WIDTH, constants.HEIGHT)
     character = Character(constants.WIDTH // 2, constants.HEIGHT // 2)
     show_inventory = False
+    show_coordinates = False
 
     status_update_timer = 0
 
@@ -38,6 +39,8 @@ def main():
                     character.update_food(20)
                 if event.key == pygame.K_t:
                     character.update_thirst(20)
+                if event.key == pygame.K_c:
+                    show_coordinates = not show_coordinates
 
             #manejar eventos del mouse para el inventario
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -111,6 +114,10 @@ def main():
         screen.blit(thirst_text, (10, constants.HEIGHT - 65))
         screen.blit(stamina_text, (10, constants.HEIGHT - 40))
         screen.blit(time_text, (10, constants.HEIGHT - 15))
+
+        if show_coordinates:
+            coord_text = font.render(f"X: {int(character.x)} , Y: {int(character.y)}", True, constants.WHITE)
+            screen.blit(coord_text, (10, constants.HEIGHT - 140))
 
         pygame.display.flip()
 
