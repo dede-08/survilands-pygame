@@ -88,10 +88,12 @@ class World:
 
         self.chunk_size = constants.WIDTH
         self.active_chunks = {}
+        self.inactive_chunks = {}
 
         self.view_width = width
         self.view_height = height
 
+        #cargar imagen del grass
         grass_path = os.path.join('assets', 'images', 'objects', 'grass.png')
         self.grass_image = pygame.image.load(grass_path).convert()
         self.grass_image = pygame.transform.scale(self.grass_image, (constants.GRASS, constants.GRASS))
@@ -116,16 +118,23 @@ class World:
         return(chunk_x, chunk_y)
     
     def generate_chunk(self, chunk_x, chunk_y):
-        #genera un nuevo chunk en las coordenadas especificas
+        #genera un nuevo chunk en las coordenadas especificas o recupera uno existente
         key = (chunk_x, chunk_y)
         if key not in self.active_chunks:
-            x = chunk_x * self.chunk_size
-            y = chunk_y * self.chunk_size
-            self.active_chunks[key] = WorldChunk(x, y, self.chunk_size, self.chunk_size)
+            # verificar si el chunk no existe en inactive_chunks
+            if key in self.inactive_chunks:
+                #recuperar el chunk inactivo
+                self.active_chunks[key] = self.inactive_chunks[key]
+                del self.inactive_chunks[key]
+            else:
+                x = chunk_x * self.chunk_size
+                y = chunk_y * self.chunk_size
+                self.active_chunks[key] = WorldChunk(x, y, self.chunk_size, self.chunk_size)
 
     def update_chunks(self, player_x, player_y):
         #actualiza los chunks basado en la posicion del jugador
         current_chunk = self.get_chunk_key(player_x, player_y)
+
         #generar chunks adyacentes
         for dx in [-2, -1, 0, 1, 2]:
             for dy in [-2, -1, 0, 1, 2]:
@@ -133,15 +142,18 @@ class World:
                 chunk_y = current_chunk[1] + dy
                 self.generate_chunk(chunk_x, chunk_y)
 
-        #eliminar chunks lejanos
-        chunks_to_remove = []
+        #mover chunks lejanos a inactive_chunks en lugar de eliminarlos
+        chunks_to_move = []
         for chunk_key in self.active_chunks:
             distance_x = abs(chunk_key[0] - current_chunk[0])
             distance_y = abs(chunk_key[1] - current_chunk[1])
-            if distance_x > 2 or distance_y > 2: #aumentando el rango de eliminacion
-                chunks_to_remove.append(chunk_key)
-        
-        for chunk_key in chunks_to_remove:
+            if distance_x > 2 or distance_y > 2:
+                chunks_to_move.append(chunk_key)
+
+
+        for chunk_key in chunks_to_move:
+            #mover el chunk a inactive_chunks en lugar de eliminarlos
+            self.inactive_chunks[chunk_key] = self.active_chunks[chunk_key]
             del self.active_chunks[chunk_key]
 
     def update_time(self, dt):
