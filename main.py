@@ -75,7 +75,7 @@ def main():
 
         status_update_timer += dt
         if status_update_timer >= constants.STATUS_UPDATE_INTERVAL:
-            character.update_status()
+            character.update_status(world)
             status_update_timer = 0
 
         if character.energy <= 0 or character.food <= 0 or character.thirst <= 0:

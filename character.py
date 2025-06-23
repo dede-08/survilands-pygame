@@ -219,12 +219,21 @@ class Character:
             screen.blit(current_frame, (screen_x, screen_y))
         self.draw_status_bars(screen)
 
+    def is_in_water(self, world):
+        #verificar si el personaje esta en el agua
+        return world.is_water_at(self.x + constants.PLAYER // 2, self.y + constants.PLAYER // 2)
+
     def move(self, dx, dy, world):
         self.moving = dx != 0 or dy != 0
 
         if self.moving:
             #Ajustar la animacion segun si está corriendo o caminando
             speed_multiplier = RUN_SPEED if self.is_running and self.stamina > 0 else WALK_SPEED
+
+            #redicir velocidad si esta en el agua
+            if self.is_in_water(world):
+                speed_multiplier *= constants.WATER_MOVEMENT_MULTIPLIER
+
             dx *= speed_multiplier / WALK_SPEED
             dy *= speed_multiplier / WALK_SPEED
             if dy > 0:
@@ -281,6 +290,13 @@ class Character:
     def interact(self, world):
         #check if 'e' key is pressing and hoe is equipped
         keys = pygame.key.get_pressed()
+
+        #si está en el agua, beber agua
+        if keys[pygame.K_e] and self.is_in_water(world):
+            self.update_thirst(constants.WATER_THIRST_RECOVERY)
+            return
+
+        #si tiene la azada equipada, usar la azada
         if keys[pygame.K_e] and self.inventory.has_hoe_equipped():
             self.is_hoeing = True
             self.hoe_timer = pygame.time.get_ticks()
@@ -353,7 +369,13 @@ class Character:
         pygame.draw.rect(screen, constants.BAR_BACKGROUND, (x_offset, y_offset, bar_width, bar_height))
         pygame.draw.rect(screen, constants.STAMINA_COLOR, (x_offset, y_offset, bar_width * (self.stamina / constants.MAX_STAMINA), bar_height))
 
-    def update_status(self):
+        #mostrar mensaje si esta en el agua
+        font = pygame.font.Font(None, 20)
+        if hasattr(self, 'in_water') and self.in_water:
+            water_text = font.render("Press 'E' drink water", True, constants.WHITE)
+            screen.blit(water_text, (x_offset, y_offset + 25))
+
+    def update_status(self, world=None):
         #aplicar multiplicadores si está corriendo
         food_rate = FOOD_DECREASE_RATE * (RUN_FOOD_DECREASE_MULTIPLIER if self.is_running else 1)
         thirst_rate = THIRST_DECREASE_RATE * (RUN_THIRST_DECREASE_MULTIPLIER if self.is_running else 1)
@@ -366,9 +388,10 @@ class Character:
         else:
             self.update_energy(constants.ENERY_INCREASE_RATE)
 
-        #qrecuperar stamina cuando no está corriendo
+        #recuperar stamina cuando no está corriendo
         if not self.is_running:
             self.update_stamina(STAMINA_DECREASE_RATE)
 
-                          
-                        
+        #actualizar estado de agua
+        if world:
+            self.in_water = self.is_in_water(world)

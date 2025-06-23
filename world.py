@@ -1,6 +1,6 @@
 import pygame
 import constants
-from elements import Tree, SmallStone, FarmLand
+from elements import Tree, SmallStone, FarmLand, Water
 import random
 import os
 from pygame import Surface
@@ -14,6 +14,7 @@ class WorldChunk:
         self.width = width
         self.height = height
         self.farmland_tiles = {}
+        self.water_tiles = {}
 
         #crear una semilla unica basada en las coordenadas del chunk
         chunk_seed = hash(f"{x},{y}")
@@ -37,6 +38,32 @@ class WorldChunk:
             )for _ in range(10)
         ]
 
+        #generar agua (lagos pequeños)
+        if random.random() < constants.WATER_GENERATION_PROBABILITY:
+            #crear un lago circular
+            center_x = self.x + random.randint(0, width)
+            center_y = self.y + random.randint(0, height)
+            radius = random.randint(3, 8) * constants.GRASS
+
+            #crear tiles de agua en un patron circular
+            for y_offset in range(-int(radius), int(radius) + 1, constants.GRASS):
+                for x_offset in range(-int(radius), int(radius) + 1, constants.GRASS):
+                    #calcular posicion del tile
+                    tile_x = center_x + x_offset
+                    tile_y = center_y + y_offset
+
+                    #verificar si esta dentro del circulo y dentro del chunk
+                    if((x_offset ** 2 + y_offset ** 2) <= radius ** 2 and
+                        self.x <= tile_x < self.x + width and
+                        self.y <= tile_y < self.y + height):
+
+                        #alinear a la cuadricula
+                        grid_x = (tile_x // constants.GRASS) * constants.GRASS
+                        grid_y = (tile_y // constants.GRASS) * constants.GRASS
+
+                        tile_key = (grid_x, grid_y)
+                        self.water_tiles[tile_key] = Water(grid_x, grid_y)
+
         #restaurar el estado anterior del generador random
         random.setstate(old_state)
 
@@ -47,22 +74,23 @@ class WorldChunk:
 
         #calcular el rango de tiles de grass visibles con un tile extra para evitar lineas
         start_x = max(0, (camera_x - self.x - constants.GRASS) // constants.GRASS)
-        end_X = min(self.width // constants.GRASS + 1, (camera_x + constants.WIDTH - self.x + constants.GRASS) // constants.GRASS + 1)
+        end_x = min(self.width // constants.GRASS + 1, (camera_x + constants.WIDTH - self.x + constants.GRASS) // constants.GRASS + 1)
         start_y = max(0, (camera_y - self.y - constants.GRASS) // constants.GRASS)
         end_y = min(self.height // constants.GRASS + 1, (camera_y + constants.HEIGHT - self.y + constants.GRASS) // constants.GRASS + 1)
 
         for y in range(int(start_y), int(end_y)):
-            for x in range(int(start_x), int(end_X)):
+            for x in range(int(start_x), int(end_x)):
                 tile_x = self.x + x * constants.GRASS
                 tile_y = self.y + y * constants.GRASS
                 screen_x = tile_x - camera_x
                 screen_y = tile_y - camera_y
 
                 tile_key = (tile_x, tile_y)
-                if tile_key in self.farmland_tiles:
-                    self.farmland_tiles[tile_key].draw(screen, camera_x, camera_y)
-                else:
-                    screen.blit(grass_image, (screen_x, screen_y))
+                if tile_key not in self.water_tiles:
+                    if tile_key in self.farmland_tiles:
+                        self.farmland_tiles[tile_key].draw(screen, camera_x, camera_y)
+                    else:
+                        screen.blit(grass_image, (screen_x, screen_y))
 
         #remover elementos agotados
         self.trees = [tree for tree in self.trees if not tree.is_depleted()]
@@ -82,6 +110,17 @@ class WorldChunk:
             if(tree_screen_x + tree.size >= 0 and tree_screen_x <= constants.WIDTH and 
                tree_screen_y + tree.size >= 0 and tree_screen_y <= constants.HEIGHT):
                 tree.draw(screen, camera_x, camera_y)
+
+        #dibujar agua despues de los elementos para que aparezca por encima
+        for tile_key, water in self.water_tiles.items():
+            water.draw(screen, camera_x, camera_y)
+
+    def update(self, dt):
+        """actualizar los elementos del chunk"""
+        #actualizar animacion del agua
+        for water in self.water_tiles.values():
+            water.update(dt)
+
 
 class World: 
     def __init__(self, width, height):
@@ -181,6 +220,10 @@ class World:
         
         self.day_overlay.set_alpha(alpha)
 
+        #actualizar los chunks activos
+        for chunk in self.active_chunks.values():
+            chunk.update(dt)
+
     def draw(self, screen, camera_x, camera_y):
         
         #dibujar todos los chunks activos con el offset de la camara
@@ -211,6 +254,14 @@ class World:
             all_stones.extend(chunk.small_stones)
         return all_stones
 
+    @property
+    def water_tiles(self):
+        #retorna todos los tiles de agua de todos los chunks activos
+        all_water = {}
+        for chunk in self.active_chunks.values():
+            all_water.update(chunk.water_tiles)
+        return all_water
+
     def add_farmland(self, x, y):
         """añade un tile de tierra cultivada en la posicion especifica"""
         #obtener el chunk correspondiente a la posicion
@@ -233,10 +284,29 @@ class World:
                     grid_y < stone.y + stone.size and grid_y + constants.GRASS > stone.y):
                     return False
 
+            #verificar si hay agua en esa posicion
+            tile_key = (grid_x, grid_y)
+            if tile_key in chunk.water_tiles:
+                return False
+
             #si no hay obstaculos, crear el tile de farmland
             from elements import FarmLand
-            tile_key = (grid_x, grid_y)
             if tile_key not in chunk.farmland_tiles:
                 chunk.farmland_tiles[tile_key] = FarmLand(grid_x, grid_y)
             return True
+        return False
+
+    def is_water_at(self, x, y):
+        #verifica si hay agua en la posicion especificada
+        chunk_key = self.get_chunk_key(x, y)
+        chunk = self.active_chunks.get(chunk_key)
+
+        if chunk:
+            #alinear la posicion a la cuadricula
+            grid_x = (x // constants.GRASS) * constants.GRASS
+            grid_y = (y // constants.GRASS) * constants.GRASS
+
+            tile_key = (grid_x, grid_y)
+            return tile_key in chunk.water_tiles
+
         return False

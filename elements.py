@@ -1,3 +1,5 @@
+import math
+
 import pygame
 import constants
 import os 
@@ -86,7 +88,38 @@ class FarmLand:
                 screen_y + self.size >= 0 and screen_y <= constants.HEIGHT):
             screen.blit(self.image, (screen_x, screen_y))
 
+class Water:
+    def __init__(self, x, y, is_flowing=False):
+        self.x = x
+        self.y = y
+        self.is_flowing = is_flowing #para diferenciar rios de lagos
+        self.is_drinkable = True
+        self.size = constants.GRASS
+        #para animacion simple
+        self.animation_frame = 0
+        self.animation_timer = 0
 
+    def update(self, dt):
+        #animacion simple del agua
+        self.animation_timer += dt
+        if self.animation_timer > 500: #cambiar frame cada 500ms
+            self.animation_timer = 0
+            self.animation_frame = (self.animation_frame + 1) % 4
+
+    def draw(self, screen, camera_x, camera_y):
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+
+        if(screen_x + self.size >= 0 and screen_x <= constants.WIDTH and
+            screen_y + self.size >= 0 and screen_y <= constants.HEIGHT):
+            #crear un rectangulo para el agua
+            water_rect = pygame.Rect(screen_x, screen_y, self.size, self.size)
+
+            #aplicar un pequeño offset basado en animation_frame para crear el efecto de ondulacion
+            offset_y = math.sin(self.animation_frame * math.pi / 2) * 2
+
+            #dibujar el agua como un rectangulo con el color definido en constants
+            pygame.draw.rect(screen, constants.WATER_COLOR, pygame.Rect(screen_x, screen_y + offset_y, self.size, self.size))
 
 
 

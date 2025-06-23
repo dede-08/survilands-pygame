@@ -111,6 +111,11 @@ SLOT_BORDER = (100, 100, 100)       #darker gray
 SLOT_HOVER = (160, 160, 160)        #lighter gray
 
 
+#constants for the water
+WATER_COLOR = (64, 164, 223, 180)       #azul semi-transparente para el agua
+WATER_MOVEMENT_MULTIPLIER = 0.5         #movimiento mas lento en agua
+WATER_GENERATION_PROBABILITY = 0.3      #probabilidad de generar agua en un chunk
+WATER_THIRST_RECOVERY = 20              #cantidad de sed recuperada al beber agua
 
 
 
