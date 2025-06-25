@@ -29,7 +29,8 @@ class Inventory:
             'wood': os.path.join('assets', 'images', 'objects', 'wood.png'),
             'stone': os.path.join('assets', 'images', 'objects', 'small_stone2.png'),
             'axe': os.path.join('assets', 'images', 'objects', 'axe.png'),
-            'hoe': os.path.join('assets', 'images', 'objects', 'hoe.png')
+            'hoe': os.path.join('assets', 'images', 'objects', 'hoe.png'),
+            'bucket' : os.path.join('assets', 'images', 'objects', 'bucket.png')
         }
 
         #definir recetas de crafteo
@@ -41,6 +42,10 @@ class Inventory:
             'hoe' : {
                 'pattern': [('stone', 'wood'), (None, None)],
                 'result': 'hoe'
+            },
+            'bucket' : {
+                'pattern': [('wood', 'wood', ), ('wood', None)],
+                'result': 'bucket'
             }
         }
 
@@ -277,14 +282,14 @@ class Inventory:
         if button == 1: #left click
             if hand == 'left':
                 if self.dragged_item:
-                    if self.dragged_item.name in ['axe', 'hoe']: #allow axe and hoe in hands
+                    if self.dragged_item.name in ['axe', 'hoe', 'bucket']: #allow axe, how and buckets in hands
                         self.left_hand, self.dragged_item = self.dragged_item, self.left_hand
                 elif self.left_hand:
                     self.dragged_item = self.left_hand
                     self.left_hand = None
             else:
                 if self.dragged_item:
-                    if self.dragged_item.name in ['axe', 'hoe']: #allow axe and hoe in hands
+                    if self.dragged_item.name in ['axe', 'hoe', 'bucket']: #allow axe, how and buckets in hands
                         self.right_hand, self.dragged_item = self.dragged_item, self.right_hand
                 elif self.right_hand:
                     self.dragged_item = self.right_hand
@@ -300,6 +305,12 @@ class Inventory:
         return(
             (self.left_hand and self.left_hand.name == 'hoe') or
             (self.right_hand and self.right_hand.name == 'hoe')
+        )
+
+    def has_bucket_eqipped(self):
+        return(
+            (self.left_hand and self.left_hand.name == 'bucket') or
+            (self.right_hand and self.right_hand.name == 'bucket')
         )
 
     def _return_dragged_item(self):
