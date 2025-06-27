@@ -291,10 +291,26 @@ class Character:
         #check if 'e' key is pressing and hoe is equipped
         keys = pygame.key.get_pressed()
 
-        #si está en el agua, beber agua
+        if keys[pygame.K_e]:
+            #verificar si tiene cubeta llena equipada
+            water_bucket_equipped, hand = self.inventory.has_water_bucket_equipped()
+            if water_bucket_equipped:
+                #por ahora, solo vaciaremos la cubeta
+                self.inventory.empty_bucket(hand)
+                return
+
+        #si está en el agua, verificar si tiene la cubeta equipada
         if keys[pygame.K_e] and self.is_in_water(world):
+            #verificar si tiene la cubeta equipada
+            bucket_equipped, hand = self.inventory.has_bucket_equipped()
+            if bucket_equipped:
+                #llenar la cubeta
+                self.inventory.fill_bucket(hand)
+                return
+            #si no tiene cubeta, solo beber agua
             self.update_thirst(constants.WATER_THIRST_RECOVERY)
             return
+
 
         #si tiene la azada equipada, usar la azada
         if keys[pygame.K_e] and self.inventory.has_hoe_equipped():
@@ -372,8 +388,18 @@ class Character:
         #mostrar mensaje si esta en el agua
         font = pygame.font.Font(None, 20)
         if hasattr(self, 'in_water') and self.in_water:
-            water_text = font.render("Press 'E' drink water", True, constants.WHITE)
-            screen.blit(water_text, (x_offset, y_offset + 25))
+            #verificar si tiene cubeta
+            bucket_equipped, _ = self.inventory.has_bucket_equipped()
+            water_bucket_equipped, _ = self.inventory.has_water_bucket_equipped()
+            if bucket_equipped:
+                water_text = font.render("press 'E' to fill bucket", True, constants.WHITE)
+                screen.blit(water_text, (x_offset, y_offset + 25))
+            elif water_bucket_equipped:
+                water_text = font.render("press 'E' to empty bucket", True, constants.WHITE)
+                screen.blit(water_text, (x_offset, y_offset + 25))
+            else:
+                water_text = font.render("press 'E' to drink water", True, constants.WHITE)
+                screen.blit(water_text, (x_offset, y_offset + 25))
 
     def update_status(self, world=None):
         #aplicar multiplicadores si está corriendo
