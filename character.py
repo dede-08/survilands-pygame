@@ -291,13 +291,25 @@ class Character:
         #check if 'e' key is pressing and hoe is equipped
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_e]:
-            #verificar si tiene cubeta llena equipada
-            water_bucket_equipped, hand = self.inventory.has_water_bucket_equipped()
-            if water_bucket_equipped:
-                #por ahora, solo vaciaremos la cubeta
-                self.inventory.empty_bucket(hand)
-                return
+        #verificar si tiene cubeta llena equipada
+        water_bucket_equipped, hand = self.inventory.has_water_bucket_equipped()
+        if water_bucket_equipped and keys[pygame.K_e]:
+            #obtener posicion de casilla donde está parado el jugador
+            grid_x = (self.x // constants.GRASS) * constants.GRASS
+            grid_y = (self.y // constants.GRASS) * constants.GRASS
+
+            #verificar si hay tierra de cultivo en esta posicion
+            farmland = world.get_farmland_at(grid_x, grid_y)
+            if farmland:
+                if farmland.water():
+                    #vaciar el cubo despues de regar
+                    self.inventory.empty_bucket(hand)
+                    return
+            #si no encuentra tierra de cultivo o ya está regada, simplemente vaciar el cubo
+            self.inventory.empty_bucket(hand)
+            return
+
+
 
         #si está en el agua, verificar si tiene la cubeta equipada
         if keys[pygame.K_e] and self.is_in_water(world):
@@ -320,6 +332,15 @@ class Character:
             #intentar crear tierra de cultivo en la posicion actual
             world.add_farmland(self.x, self.y)
             return
+
+        #verificar si podemos cosechar los cultivos presionando E
+        if keys[pygame.K_e]:
+            grid_x = (self.x // constants.GRASS) * constants.GRASS
+            grid_y = (self.y // constants.GRASS) * constants.GRASS
+            farmland = world.get_farmland_at(grid_x, grid_y)
+            if farmland and farmland.harvest():
+                self.inventory.add_item('carrot')
+                return
 
         for tree in world.trees:
             if self.is_near(tree):

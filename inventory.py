@@ -31,7 +31,8 @@ class Inventory:
             'axe': os.path.join('assets', 'images', 'objects', 'axe.png'),
             'hoe': os.path.join('assets', 'images', 'objects', 'hoe.png'),
             'bucket' : os.path.join('assets', 'images', 'objects', 'bucket.png'),
-            'water_bucket' : os.path.join('assets', 'images', 'objects', 'bucket-full.png')
+            'water_bucket' : os.path.join('assets', 'images', 'objects', 'bucket-full.png'),
+            'carrot' : os.path.join('assets', 'images', 'objects', 'carrot.png')
         }
 
         #definir recetas de crafteo

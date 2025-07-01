@@ -8,7 +8,7 @@ from world import World
 pygame.init()
 
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
-pygame.display.set_caption("survival simulator")
+pygame.display.set_caption("survilands")
 
 
 def main():
@@ -69,6 +69,9 @@ def main():
 
         #actualizar los chunks en base a la posicion del personaje
         world.update_chunks(character.x, character.y)
+
+        #actulizar elementos del mundo
+        world.update(dt)
 
         #actualizar el tiempo del dia
         world.update_time(dt)
