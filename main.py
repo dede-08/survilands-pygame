@@ -21,7 +21,7 @@ if opcion == "Jugar":
 elif opcion == "Controles":
     # Mostrar pantalla de controles (te ayudo si quieres)
     pass
-elif opcion == "Créditos":
+elif opcion == "Creditos":
     # Mostrar créditos
     pass
 elif opcion == "Salir":
