@@ -3,6 +3,7 @@ import sys
 import constants
 from character import Character
 from world import World
+from main_menu import MainMenu
 
 #inicializar pygame
 pygame.init()
@@ -10,6 +11,22 @@ pygame.init()
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 pygame.display.set_caption("survilands")
 
+# Mostrar menú
+menu = MainMenu(screen)
+opcion = menu.run()
+
+if opcion == "Jugar":
+    # Aquí inicia tu bucle principal del juego
+    pass
+elif opcion == "Controles":
+    # Mostrar pantalla de controles (te ayudo si quieres)
+    pass
+elif opcion == "Créditos":
+    # Mostrar créditos
+    pass
+elif opcion == "Salir":
+    pygame.quit()
+    sys.exit()
 
 def main():
     clock = pygame.time.Clock()
