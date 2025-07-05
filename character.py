@@ -9,6 +9,9 @@ class Character:
         self.x = x
         self.y = y
         self.inventory = Inventory()
+        self.max_health = 10
+        self.current_health = 10
+        self.last_damage_time = pygame.time.get_ticks()
 
         #cargar hoja de sprite
         image_path = os.path.join('assets', 'images', 'character', 'Player.png')
@@ -17,6 +20,14 @@ class Character:
         self.action_sprite_sheet = pygame.image.load(
             os.path.join('assets', 'images', 'character', 'Player_Actions.png')
         ).convert_alpha()
+
+        # Cargar imagen del corazón
+        self.heart_full = pygame.image.load(os.path.join("assets", "images", "interface", "heart.png")).convert_alpha()
+        self.heart_empty = pygame.image.load(os.path.join("assets", "images", "interface", "heart_empty.png")).convert_alpha()
+
+        # Escalarlas si es necesario (por ejemplo, 32x32 px)
+        self.heart_full = pygame.transform.scale(self.heart_full, (32, 32))
+        self.heart_empty = pygame.transform.scale(self.heart_empty, (32, 32))
 
         #animacion properties
         self.frame_size = FRAME_SIZE
@@ -187,6 +198,8 @@ class Character:
         #calcular posicion en pantalla relativa a la camara 
         screen_x = self.x - camera_x
         screen_y = self.y - camera_y
+
+
 
         if self.is_chopping:
             if self.current_state in [IDLE_RIGHT, WALK_RIGHT]:
@@ -422,15 +435,31 @@ class Character:
                 water_text = font.render("press 'E' to drink water", True, constants.WHITE)
                 screen.blit(water_text, (x_offset, y_offset + 25))
 
+        # Dibujar corazones de vida
+        heart_spacing = 30
+        heart_x = constants.WIDTH - (self.max_health * heart_spacing) - 10
+        heart_y = 10
+
+        for i in range(self.max_health):
+            if i < self.current_health:
+                screen.blit(self.heart_full, (heart_x + i * heart_spacing, heart_y))
+            else:
+                screen.blit(self.heart_empty, (heart_x + i * heart_spacing, heart_y))
+
     def update_status(self, world=None):
         #aplicar multiplicadores si está corriendo
         food_rate = FOOD_DECREASE_RATE * (RUN_FOOD_DECREASE_MULTIPLIER if self.is_running else 1)
         thirst_rate = THIRST_DECREASE_RATE * (RUN_THIRST_DECREASE_MULTIPLIER if self.is_running else 1)
 
-        self.update_food(-constants.FOOD_DECREASE_RATE)
-        self.update_thirst(-constants.THIRST_DECREASE_RATE)
+        self.update_food(-food_rate)
+        self.update_thirst(-thirst_rate)
 
         if self.food < constants.MAX_FOOD * 0.2 or self.thirst < constants.MAX_THIRST * 0.2:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_damage_time > 30000:  # cada 30 segundos
+                if self.current_health > 0:
+                    self.current_health -= 1
+                    self.last_damage_time = current_time
             self.update_energy(-constants.ENERY_DECREASE_RATE)
         else:
             self.update_energy(constants.ENERY_INCREASE_RATE)

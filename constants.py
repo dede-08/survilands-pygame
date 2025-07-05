@@ -55,8 +55,8 @@ DAWN_DUSK_COLOR = (255, 193, 137)   #color anaranjado para el amanecer/atardecer
 
 
 #velocidades de disminucion de estados}
-FOOD_DECREASE_RATE = 0.01       #velocidad de disminucion de comida
-THIRST_DECREASE_RATE = 0.02     #velocidad de disminucion de sed
+FOOD_DECREASE_RATE = 1      #velocidad de disminucion de comida
+THIRST_DECREASE_RATE = 1    #velocidad de disminucion de sed
 ENERY_DECREASE_RATE = 0.005     #velocidad de disminucion de energia en estado critico
 ENERY_INCREASE_RATE = 0.001     #velocidad de recuperacion de energia en estado normal
 MOVEMENT_ENERGY_COST = 0.001    #energia consumida por movimiento

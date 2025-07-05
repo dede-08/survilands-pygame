@@ -98,7 +98,7 @@ def main():
             character.update_status(world)
             status_update_timer = 0
 
-        if character.energy <= 0 or character.food <= 0 or character.thirst <= 0:
+        if character.current_health <= 0:
             print("game over :c")
             pygame.quit()
             sys.exit()
