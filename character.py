@@ -335,6 +335,10 @@ class Character:
             #si no tiene cubeta, solo beber agua
             self.update_thirst(constants.WATER_THIRST_RECOVERY)
             return
+        # restaurar salud si comida y sed están al máximo
+        if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
+            if self.current_health < self.max_health:
+                self.current_health += 1
 
 
         #si tiene la azada equipada, usar la azada
@@ -364,6 +368,29 @@ class Character:
                     self.chop_frame = 0
                 if tree.chop(with_axe = has_axe):
                     self.inventory.add_item('wood')
+                return
+
+        # Comer zanahoria si está equipada y presiona E
+        if keys[pygame.K_e]:
+            if self.inventory.left_hand and self.inventory.left_hand.name == 'carrot':
+                self.update_food(5)
+                self.inventory.left_hand.quantity -= 1
+                if self.inventory.left_hand.quantity <= 0:
+                    self.inventory.left_hand = None
+                # restaurar salud si comida y sed están al máximo
+                if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
+                    if self.current_health < self.max_health:
+                        self.current_health += 1
+                return
+            elif self.inventory.right_hand and self.inventory.right_hand.name == 'carrot':
+                self.update_food(5)
+                self.inventory.right_hand.quantity -= 1
+                if self.inventory.right_hand.quantity <= 0:
+                    self.inventory.right_hand = None
+                # restaurar salud si comida y sed están al máximo
+                if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
+                    if self.current_health < self.max_health:
+                        self.current_health += 1
                 return
 
         for stone in world.small_stones:

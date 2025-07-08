@@ -16,10 +16,9 @@ menu = MainMenu(screen)
 opcion = menu.run()
 
 if opcion == "Jugar":
-    # Aquí inicia tu bucle principal del juego
     pass
 elif opcion == "Controles":
-    # Mostrar pantalla de controles (te ayudo si quieres)
+    # Mostrar pantalla de controles
     pass
 elif opcion == "Creditos":
     # Mostrar créditos
@@ -99,7 +98,7 @@ def main():
             status_update_timer = 0
 
         if character.current_health <= 0:
-            print("game over :c")
+            print("game over")
             pygame.quit()
             sys.exit()
 

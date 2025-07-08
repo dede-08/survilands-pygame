@@ -26,7 +26,7 @@ class Inventory:
 
         #cargar imagenes de los items
         self.item_images = {
-            'wood': os.path.join('assets', 'images', 'objects', 'wood.png'),
+            'wood': os.path.join('assets', 'images', 'objects', 'wood2.png'),
             'stone': os.path.join('assets', 'images', 'objects', 'small_stone2.png'),
             'axe': os.path.join('assets', 'images', 'objects', 'axe.png'),
             'hoe': os.path.join('assets', 'images', 'objects', 'hoe.png'),
@@ -284,14 +284,14 @@ class Inventory:
         if button == 1: #left click
             if hand == 'left':
                 if self.dragged_item:
-                    if self.dragged_item.name in ['axe', 'hoe', 'bucket', 'water_bucket']: #allow axe, how and buckets in hands
+                    if self.dragged_item.name in ['axe', 'hoe', 'bucket', 'water_bucket', 'carrot']: #allow axe, how and buckets in hands
                         self.left_hand, self.dragged_item = self.dragged_item, self.left_hand
                 elif self.left_hand:
                     self.dragged_item = self.left_hand
                     self.left_hand = None
             else:
                 if self.dragged_item:
-                    if self.dragged_item.name in ['axe', 'hoe', 'bucket', 'water_bucket']: #allow axe, how and buckets in hands
+                    if self.dragged_item.name in ['axe', 'hoe', 'bucket', 'water_bucket', 'carrot']: #allow axe, how and buckets in hands
                         self.right_hand, self.dragged_item = self.dragged_item, self.right_hand
                 elif self.right_hand:
                     self.dragged_item = self.right_hand
