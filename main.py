@@ -40,6 +40,8 @@ def main():
     camera_x = 0
     camera_y = 0
 
+
+
     while True:
         dt = clock.tick(60)
         for event in pygame.event.get():
@@ -110,6 +112,8 @@ def main():
 
         #dibujar personaje en el centro de la pantalla
         character.draw(screen, camera_x, camera_y)
+        #dibujar tile al que esta apuntando el jugador
+        character.draw_target_tile(screen, camera_x, camera_y)
         if show_inventory:
             character.draw_inventory(screen)
 

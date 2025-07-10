@@ -498,3 +498,21 @@ class Character:
         #actualizar estado de agua
         if world:
             self.in_water = self.is_in_water(world)
+
+    def draw_target_tile(self, screen, camera_x, camera_y):
+        # Verifica si tiene equipada una herramienta de acción (azada o cubeta)
+        hoe_equipped = self.inventory.has_hoe_equipped()
+        bucket_equipped, _ = self.inventory.has_bucket_equipped()
+        water_bucket_equipped, _ = self.inventory.has_water_bucket_equipped()
+
+        if hoe_equipped or bucket_equipped or water_bucket_equipped:
+            # Calcular la posición del tile donde está parado el personaje
+            grid_x = (self.x // constants.GRASS) * constants.GRASS
+            grid_y = (self.y // constants.GRASS) * constants.GRASS
+
+            screen_x = grid_x - camera_x
+            screen_y = grid_y - camera_y
+
+            # Dibujar un borde negro semitransparente como resaltado
+            highlight_rect = pygame.Rect(screen_x, screen_y, constants.GRASS, constants.GRASS)
+            pygame.draw.rect(screen, (0, 0, 0), highlight_rect, 1)
