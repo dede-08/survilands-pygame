@@ -11,7 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 pygame.display.set_caption("survilands")
 
-# Mostrar menú
+#mostrar menú
 menu = MainMenu(screen)
 opcion = menu.run()
 

@@ -28,7 +28,7 @@ class WorldChunk:
             Tree(
                 self.x + random.randint(0, width - constants.TREE),
                 self.y + random.randint(0, height - constants.TREE)
-            ) for _ in range(5)
+            ) for _ in range(10)
         ]
 
         self.small_stones = [

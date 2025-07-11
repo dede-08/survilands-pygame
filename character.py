@@ -16,16 +16,16 @@ class Character:
         #cargar hoja de sprite
         image_path = os.path.join('assets', 'images', 'character', 'Player.png')
         self.sprite_sheet = pygame.image.load(image_path).convert_alpha()
-        # cargar hoja de sprites de animacion de hacha
+        #cargar hoja de sprites de animacion de hacha
         self.action_sprite_sheet = pygame.image.load(
             os.path.join('assets', 'images', 'character', 'Player_Actions.png')
         ).convert_alpha()
 
-        # Cargar imagen del corazón
+        #cargar imagen del corazón
         self.heart_full = pygame.image.load(os.path.join("assets", "images", "interface", "heart.png")).convert_alpha()
         self.heart_empty = pygame.image.load(os.path.join("assets", "images", "interface", "heart_empty.png")).convert_alpha()
 
-        # Escalarlas si es necesario (por ejemplo, 32x32 px)
+        #escalarlas si es necesario (por ejemplo, 32x32 px)
         self.heart_full = pygame.transform.scale(self.heart_full, (32, 32))
         self.heart_empty = pygame.transform.scale(self.heart_empty, (32, 32))
 
@@ -38,7 +38,7 @@ class Character:
         self.moving = False
         self.facing_left = False
         self.is_running = False
-        # agregar propiedades de animacion del hacha y azada
+        #agregar propiedades de animacion del hacha y azada
         self.is_chopping = False
         self.chop_timer = 0
         self.chop_frame = 0
@@ -183,7 +183,7 @@ class Character:
                 if self.hoe_frame == 0:
                     self.is_hoeing = False
         else:
-            #Ajustar la velocidad de animacion segun si está corriendo o caminando
+            #ajustar la velocidad de animacion segun si está corriendo o caminando
             animation_speed = RUNNING_ANIMATION_DELAY if self.is_running else ANIMATION_DELAY
             if current_time - self.animation_timer > animation_speed:
                 self.animation_timer = current_time
@@ -240,7 +240,7 @@ class Character:
         self.moving = dx != 0 or dy != 0
 
         if self.moving:
-            #Ajustar la animacion segun si está corriendo o caminando
+            #ajustar la animacion segun si está corriendo o caminando
             speed_multiplier = RUN_SPEED if self.is_running and self.stamina > 0 else WALK_SPEED
 
             #redicir velocidad si esta en el agua
@@ -335,7 +335,7 @@ class Character:
             #si no tiene cubeta, solo beber agua
             self.update_thirst(constants.WATER_THIRST_RECOVERY)
             return
-        # restaurar salud si comida y sed están al máximo
+        #restaurar salud si comida y sed están al máximo
         if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
             if self.current_health < self.max_health:
                 self.current_health += 1
@@ -370,14 +370,14 @@ class Character:
                     self.inventory.add_item('wood')
                 return
 
-        # Comer zanahoria si está equipada y presiona E
+        #comer zanahoria si está equipada y presiona E
         if keys[pygame.K_e]:
             if self.inventory.left_hand and self.inventory.left_hand.name == 'carrot':
                 self.update_food(5)
                 self.inventory.left_hand.quantity -= 1
                 if self.inventory.left_hand.quantity <= 0:
                     self.inventory.left_hand = None
-                # restaurar salud si comida y sed están al máximo
+                #restaurar salud si comida y sed están al máximo
                 if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
                     if self.current_health < self.max_health:
                         self.current_health += 1
@@ -462,7 +462,7 @@ class Character:
                 water_text = font.render("press 'E' to drink water", True, constants.WHITE)
                 screen.blit(water_text, (x_offset, y_offset + 25))
 
-        # Dibujar corazones de vida
+        #dibujar corazones de vida
         heart_spacing = 30
         heart_x = constants.WIDTH - (self.max_health * heart_spacing) - 10
         heart_y = 10
@@ -500,19 +500,19 @@ class Character:
             self.in_water = self.is_in_water(world)
 
     def draw_target_tile(self, screen, camera_x, camera_y):
-        # Verifica si tiene equipada una herramienta de acción (azada o cubeta)
+        #verifica si tiene equipada una herramienta de acción (azada o cubeta)
         hoe_equipped = self.inventory.has_hoe_equipped()
         bucket_equipped, _ = self.inventory.has_bucket_equipped()
         water_bucket_equipped, _ = self.inventory.has_water_bucket_equipped()
 
         if hoe_equipped or bucket_equipped or water_bucket_equipped:
-            # Calcular la posición del tile donde está parado el personaje
+            #calcular la posición del tile donde está parado el personaje
             grid_x = (self.x // constants.GRASS) * constants.GRASS
             grid_y = (self.y // constants.GRASS) * constants.GRASS
 
             screen_x = grid_x - camera_x
             screen_y = grid_y - camera_y
 
-            # Dibujar un borde negro semitransparente como resaltado
+            #dibujar un borde negro semitransparente como resaltado
             highlight_rect = pygame.Rect(screen_x, screen_y, constants.GRASS, constants.GRASS)
             pygame.draw.rect(screen, (0, 0, 0), highlight_rect, 1)
