@@ -26,8 +26,8 @@ class Character:
         self.heart_empty = pygame.image.load(os.path.join("assets", "images", "interface", "heart_empty.png")).convert_alpha()
 
         #escalarlas si es necesario (por ejemplo, 32x32 px)
-        self.heart_full = pygame.transform.scale(self.heart_full, (32, 32))
-        self.heart_empty = pygame.transform.scale(self.heart_empty, (32, 32))
+        self.heart_full = pygame.transform.scale(self.heart_full, (24, 24))
+        self.heart_empty = pygame.transform.scale(self.heart_empty, (24, 24))
 
         #animacion properties
         self.frame_size = FRAME_SIZE
@@ -463,7 +463,7 @@ class Character:
                 screen.blit(water_text, (x_offset, y_offset + 25))
 
         #dibujar corazones de vida
-        heart_spacing = 30
+        heart_spacing = 25
         heart_x = constants.WIDTH - (self.max_health * heart_spacing) - 10
         heart_y = 10
 

@@ -18,10 +18,10 @@ opcion = menu.run()
 if opcion == "Jugar":
     pass
 elif opcion == "Controles":
-    # Mostrar pantalla de controles
+    #mostrar pantalla de controles
     pass
 elif opcion == "Creditos":
-    # Mostrar créditos
+    #mostrar creditos
     pass
 elif opcion == "Salir":
     pygame.quit()
@@ -39,7 +39,6 @@ def main():
     #variables para la camara
     camera_x = 0
     camera_y = 0
-
 
 
     while True:

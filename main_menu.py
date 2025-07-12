@@ -1,6 +1,6 @@
 import pygame
 import sys
-import constants  # Asegúrate que tenga WIDTH, HEIGHT, WHITE, BLACK u otros colores definidos
+import constants
 
 class MainMenu:
     def __init__(self, screen):
@@ -55,4 +55,4 @@ class MainMenu:
                     elif event.key == pygame.K_DOWN:
                         self.selected = (self.selected + 1) % len(self.options)
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-                        return self.options[self.selected]  # Devuelve la opción seleccionada
+                        return self.options[self.selected]
