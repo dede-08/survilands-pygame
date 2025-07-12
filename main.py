@@ -111,8 +111,10 @@ def main():
 
         #dibujar personaje en el centro de la pantalla
         character.draw(screen, camera_x, camera_y)
+
         #dibujar tile al que esta apuntando el jugador
         character.draw_target_tile(screen, camera_x, camera_y)
+
         if show_inventory:
             character.draw_inventory(screen)
 
@@ -126,11 +128,14 @@ def main():
         food_text = font.render(f"Food: {int(character.food)}", True, constants.WHITE)
         thirst_text = font.render(f"Thirst: {int(character.thirst)}", True, constants.WHITE)
         stamina_text = font.render(f"Stamina: {int(character.stamina)}", True, constants.WHITE)
+        healt_text = font.render(f"Healt: {int(character.current_health)}", True, constants.WHITE)
         #añadir indicador de tiempo
         time_of_day = (world.current_time / constants.DAY_LENGTH) * 24 #convertir a formato de 24 horas
         time_text = font.render(f"Time: {int(time_of_day):02d}:00", True, constants.WHITE)
 
 
+
+        screen.blit(healt_text, (10, constants.HEIGHT - 140))
         screen.blit(energy_text, (10, constants.HEIGHT - 115))
         screen.blit(food_text, (10, constants.HEIGHT - 90))
         screen.blit(thirst_text, (10, constants.HEIGHT - 65))

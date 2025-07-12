@@ -195,11 +195,10 @@ class Character:
         return pygame.transform.scale(image, (40, 40))
 
     def draw(self, screen, camera_x, camera_y):
+
         #calcular posicion en pantalla relativa a la camara 
         screen_x = self.x - camera_x
         screen_y = self.y - camera_y
-
-
 
         if self.is_chopping:
             if self.current_state in [IDLE_RIGHT, WALK_RIGHT]:
@@ -378,9 +377,9 @@ class Character:
                 if self.inventory.left_hand.quantity <= 0:
                     self.inventory.left_hand = None
                 #restaurar salud si comida y sed están al máximo
-                if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
-                    if self.current_health < self.max_health:
-                        self.current_health += 1
+                #if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
+                #    if self.current_health < self.max_health:
+                #        self.current_health += 1
                 return
             elif self.inventory.right_hand and self.inventory.right_hand.name == 'carrot':
                 self.update_food(5)
@@ -388,9 +387,9 @@ class Character:
                 if self.inventory.right_hand.quantity <= 0:
                     self.inventory.right_hand = None
                 # restaurar salud si comida y sed están al máximo
-                if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
-                    if self.current_health < self.max_health:
-                        self.current_health += 1
+                #if self.food >= constants.MAX_FOOD and self.thirst >= constants.MAX_THIRST:
+                #    if self.current_health < self.max_health:
+                #        self.current_health += 1
                 return
 
         for stone in world.small_stones:
@@ -491,9 +490,13 @@ class Character:
         else:
             self.update_energy(constants.ENERY_INCREASE_RATE)
 
+        if self.food >= 80 and self.thirst >= 80 and self.current_health < self.max_health:
+            self.current_health += 1
+            print(f"Regenerando salud: {self.current_health}/{self.max_health}")
+
         #recuperar stamina cuando no está corriendo
         if not self.is_running:
-            self.update_stamina(STAMINA_DECREASE_RATE)
+            self.update_stamina(STAMINA_INCREASE_RATE)
 
         #actualizar estado de agua
         if world:

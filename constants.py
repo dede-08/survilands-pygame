@@ -53,7 +53,6 @@ NIGHT_COLOR = (20, 20, 50)          #color azul oscuro para la noche
 DAY_COLOR = (255, 255, 255)         #color blanco para el dia
 DAWN_DUSK_COLOR = (255, 193, 137)   #color anaranjado para el amanecer/atardecer
 
-
 #velocidades de disminucion de estados}
 FOOD_DECREASE_RATE = 1      #velocidad de disminucion de comida
 THIRST_DECREASE_RATE = 1    #velocidad de disminucion de sed
@@ -65,7 +64,7 @@ MOVEMENT_ENERGY_COST = 0.001    #energia consumida por movimiento
 WALK_SPEED = 5
 RUN_SPEED = 8
 STAMINA_DECREASE_RATE = 0.05
-STAMINA_INCREASE_RATE = 0.02
+STAMINA_INCREASE_RATE = 1
 RUN_FOOD_DECREASE_MULTIPLIER = 2.0
 RUN_THIRST_DECREASE_MULTIPLIER = 2.0
 
