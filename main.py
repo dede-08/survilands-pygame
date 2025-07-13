@@ -4,42 +4,30 @@ import constants
 from character import Character
 from world import World
 from main_menu import MainMenu
+from controls_screen import ControlsScreen
 
-#inicializar pygame
+# Inicializar pygame
 pygame.init()
 
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 pygame.display.set_caption("survilands")
 
-#mostrar menú
-menu = MainMenu(screen)
-opcion = menu.run()
+def show_menu():
+    menu = MainMenu(screen)
+    return menu.run()
 
-if opcion == "Jugar":
-    pass
-elif opcion == "Controles":
-    #mostrar pantalla de controles
-    pass
-elif opcion == "Creditos":
-    #mostrar creditos
-    pass
-elif opcion == "Salir":
-    pygame.quit()
-    sys.exit()
+def show_controls():
+    controles = ControlsScreen(screen)
+    controles.run()
 
-def main():
+def game_loop():
     clock = pygame.time.Clock()
     world = World(constants.WIDTH, constants.HEIGHT)
     character = Character(constants.WIDTH // 2, constants.HEIGHT // 2)
     show_inventory = False
     show_coordinates = False
-
     status_update_timer = 0
-
-    #variables para la camara
-    camera_x = 0
-    camera_y = 0
-
+    camera_x = camera_y = 0
 
     while True:
         dt = clock.tick(60)
@@ -58,8 +46,9 @@ def main():
                     character.update_thirst(20)
                 if event.key == pygame.K_c:
                     show_coordinates = not show_coordinates
+                if event.key == pygame.K_ESCAPE:
+                    return  # Volver al menú
 
-            #manejar eventos del mouse para el inventario
             if event.type == pygame.MOUSEBUTTONDOWN:
                 character.inventory.handle_click(pygame.mouse.get_pos(), event.button, show_inventory)
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -67,30 +56,19 @@ def main():
 
         dx = dy = 0
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_a]:
-            dx = -5
-        if keys[pygame.K_d]:
-            dx = 5
-        if keys[pygame.K_w]:
-            dy = -5
-        if keys[pygame.K_s]:
-            dy = 5
+        if keys[pygame.K_a]: dx = -5
+        if keys[pygame.K_d]: dx = 5
+        if keys[pygame.K_w]: dy = -5
+        if keys[pygame.K_s]: dy = 5
 
-        #actualizar estado de corriendo
         character.is_running = keys[pygame.K_LSHIFT] and character.stamina > 0
         character.move(dx, dy, world)
 
-        #la camara sigue al personaje 
         camera_x = character.x - constants.WIDTH // 2
         camera_y = character.y - constants.HEIGHT // 2
 
-        #actualizar los chunks en base a la posicion del personaje
         world.update_chunks(character.x, character.y)
-
-        #actulizar elementos del mundo
         world.update(dt)
-
-        #actualizar el tiempo del dia
         world.update_time(dt)
 
         status_update_timer += dt
@@ -103,39 +81,25 @@ def main():
             pygame.quit()
             sys.exit()
 
-        #limpiar pantalla
         screen.fill((0, 0, 0))
-
-        #dibujar mundo con offset de camara
         world.draw(screen, camera_x, camera_y)
-
-        #dibujar personaje en el centro de la pantalla
         character.draw(screen, camera_x, camera_y)
-
-        #dibujar tile al que esta apuntando el jugador
         character.draw_target_tile(screen, camera_x, camera_y)
 
         if show_inventory:
             character.draw_inventory(screen)
-
-        #dibujar inventario (hotbar siempr visible + inventario principal si esta abierto)
         character.draw_inventory(screen, show_inventory)
 
-
-        #dibujar HUD
         font = pygame.font.Font(None, 24)
         energy_text = font.render(f"Energy: {int(character.energy)}", True, constants.WHITE)
         food_text = font.render(f"Food: {int(character.food)}", True, constants.WHITE)
         thirst_text = font.render(f"Thirst: {int(character.thirst)}", True, constants.WHITE)
         stamina_text = font.render(f"Stamina: {int(character.stamina)}", True, constants.WHITE)
-        healt_text = font.render(f"Healt: {int(character.current_health)}", True, constants.WHITE)
-        #añadir indicador de tiempo
-        time_of_day = (world.current_time / constants.DAY_LENGTH) * 24 #convertir a formato de 24 horas
+        health_text = font.render(f"Health: {int(character.current_health)}", True, constants.WHITE)
+        time_of_day = (world.current_time / constants.DAY_LENGTH) * 24
         time_text = font.render(f"Time: {int(time_of_day):02d}:00", True, constants.WHITE)
 
-
-
-        screen.blit(healt_text, (10, constants.HEIGHT - 140))
+        screen.blit(health_text, (10, constants.HEIGHT - 140))
         screen.blit(energy_text, (10, constants.HEIGHT - 115))
         screen.blit(food_text, (10, constants.HEIGHT - 90))
         screen.blit(thirst_text, (10, constants.HEIGHT - 65))
@@ -144,10 +108,22 @@ def main():
 
         if show_coordinates:
             coord_text = font.render(f"X: {int(character.x)} , Y: {int(character.y)}", True, constants.WHITE)
-            screen.blit(coord_text, (10, constants.HEIGHT - 140))
+            screen.blit(coord_text, (10, constants.HEIGHT - 160))
 
         pygame.display.flip()
 
+def main():
+    while True:
+        option = show_menu()
+        if option == "Jugar":
+            game_loop()
+        elif option == "Controles":
+            show_controls()
+        elif option == "Creditos":
+            pass
+        elif option == "Salir":
+            pygame.quit()
+            sys.exit()
 
 if __name__ == "__main__":
     main()
