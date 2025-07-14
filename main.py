@@ -5,8 +5,9 @@ from character import Character
 from world import World
 from main_menu import MainMenu
 from controls_screen import ControlsScreen
+from game_over_screen import GameOverScreen
 
-# Inicializar pygame
+#inicializar pygame
 pygame.init()
 
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
@@ -27,6 +28,7 @@ def game_loop():
     show_inventory = False
     show_coordinates = False
     status_update_timer = 0
+
     camera_x = camera_y = 0
 
     while True:
@@ -47,7 +49,7 @@ def game_loop():
                 if event.key == pygame.K_c:
                     show_coordinates = not show_coordinates
                 if event.key == pygame.K_ESCAPE:
-                    return  # Volver al menú
+                    return
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 character.inventory.handle_click(pygame.mouse.get_pos(), event.button, show_inventory)
@@ -77,9 +79,10 @@ def game_loop():
             status_update_timer = 0
 
         if character.current_health <= 0:
-            print("game over")
-            pygame.quit()
-            sys.exit()
+            game_over = GameOverScreen(screen)
+            result = game_over.run()
+            if result == "menu":
+                return
 
         screen.fill((0, 0, 0))
         world.draw(screen, camera_x, camera_y)
@@ -119,8 +122,6 @@ def main():
             game_loop()
         elif option == "Controles":
             show_controls()
-        elif option == "Creditos":
-            pass
         elif option == "Salir":
             pygame.quit()
             sys.exit()

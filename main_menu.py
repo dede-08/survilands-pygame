@@ -5,15 +5,15 @@ import constants
 class MainMenu:
     def __init__(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 48)
-        self.title_font = pygame.font.Font(None, 80)
+        #self.font = pygame.font.Font(None, 48)
+        self.title_font = pygame.font.Font("assets/fonts/Minecraft.ttf", 100)
         self.clock = pygame.time.Clock()
 
-        self.options = ["Jugar", "Controles", "Creditos", "Salir"]
+        self.options = ["Jugar", "Controles", "Salir"]
         self.selected = 0
 
-        # Cargar imagen de fondo
-        self.background_image = pygame.image.load("assets/images/interface/menu_background.png").convert()
+        #cargar imagen de fondo
+        self.background_image = pygame.image.load("assets/images/interface/options_background.png").convert()
         self.background_image = pygame.transform.scale(self.background_image, (constants.WIDTH, constants.HEIGHT))
 
         #cargar fuentes de las opciones
@@ -25,12 +25,12 @@ class MainMenu:
         #dibujar el fondo del menu
         self.screen.blit(self.background_image, (0, 0))
 
-        # Título del juego
-        #title_text = self.title_font.render("SURVILANDS", True, constants.WHITE)
-        #title_rect = title_text.get_rect(center=(constants.WIDTH // 2, 100))
-        #self.screen.blit(title_text, title_rect)
+        #título del juego
+        title_text = self.title_font.render("SURVILANDS", True, constants.WHITE)
+        title_rect = title_text.get_rect(center=(constants.WIDTH // 2, 100))
+        self.screen.blit(title_text, title_rect)
 
-        # Opciones del menú
+        #opciones del menu
         for index, option in enumerate(self.options):
             color = constants.WHITE if index != self.selected else (255, 255, 0)  # Amarillo si está seleccionado
             text = self.font.render(option, True, color)
