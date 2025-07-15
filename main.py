@@ -32,6 +32,7 @@ def game_loop():
     show_coordinates = False
     status_update_timer = 0
     skeletons = []
+    skeletons_spawned = False
 
     camera_x = camera_y = 0
 
@@ -77,20 +78,22 @@ def game_loop():
         world.update(dt)
         world.update_time(dt)
 
-        # ─────────── ENEMIGOS: generar solo de noche ───────────
-        is_night = world.current_time < constants.DAWN_TIME or world.current_time > constants.DUKS_TIME
+        #generar enemigos solo de noche (18:00)
+        is_night = world.current_time >= constants.DUKS_TIME or world.current_time < constants.DAWN_TIME
 
-        # Aparecen esqueletos solo de noche
-        if is_night and len(skeletons) < 5:
-            for _ in range(3):  # por ejemplo, 3 esqueletos
-                distance = random.randint(300, 600)  # distancia mínima y máxima
-                angle = random.uniform(0, 2 * 3.14159)  # ángulo aleatorio (en radianes)
-
+        if is_night and not skeletons_spawned:
+            for _ in range(5):  # cantidad de esqueletos a generar
+                distance = random.randint(300, 600)
+                angle = random.uniform(0, 2 * 3.14159)
                 spawn_x = character.x + int(distance * math.cos(angle))
                 spawn_y = character.y + int(distance * math.sin(angle))
-
                 skeletons.append(Skeleton(spawn_x, spawn_y))
-        # puedes ajustar la posición inicial
+            skeletons_spawned = True
+            print("Esqueletos generados")
+
+        if not is_night:
+            skeletons.clear()
+            skeletons_spawned = False
 
         status_update_timer += dt
         if status_update_timer >= constants.STATUS_UPDATE_INTERVAL:
@@ -108,12 +111,13 @@ def game_loop():
         character.draw(screen, camera_x, camera_y)
         character.draw_target_tile(screen, camera_x, camera_y)
 
-        # ─────────── DIBUJAR Y ACTUALIZAR ENEMIGOS ───────────
-        for skeleton in skeletons:
-            skeleton.move_towards_player(character, world, skeletons)
-            skeleton.update_animation()
-            skeleton.check_collision_with_player(character)
-            skeleton.draw(screen, camera_x, camera_y)
+        #dibujar y actualizar enemigos
+        if is_night:
+            for skeleton in skeletons:
+                skeleton.move_towards_player(character, world, skeletons)
+                skeleton.update_animation()
+                skeleton.check_collision_with_player(character)
+                skeleton.draw(screen, camera_x, camera_y)
 
         if show_inventory:
             character.draw_inventory(screen)

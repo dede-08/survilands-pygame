@@ -17,7 +17,7 @@ class Skeleton:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.frame_size = constants.FRAME_SIZE  # tamaño original del sprite del esqueleto
+        self.frame_size = constants.FRAME_SIZE
         self.sprite_sheet = pygame.image.load(
             os.path.join("assets", "images", "enemies", "Skeleton.png")).convert_alpha()
         self.animations = self.load_animations()
@@ -57,7 +57,7 @@ class Skeleton:
             new_x = self.x + dx * self.speed
             new_y = self.y + dy * self.speed
 
-            # Solo moverse si no colisiona con otro esqueleto
+            #solo moverse si no colisiona con otro esqueleto
             if not self.check_collision(new_x, new_y, others):
                 self.x = new_x
                 self.y = new_y
@@ -66,7 +66,7 @@ class Skeleton:
                 self.x = new_x
                 self.y = new_y
 
-        # Dirección de movimiento para animaciones
+        #dirección de movimiento para animaciones
         if abs(dx) > abs(dy):
             self.current_state = WALK_RIGHT
             if dx < 0:
@@ -92,20 +92,20 @@ class Skeleton:
         return False
 
     def collides_with_objects(self, x, y, world, other_skeletons):
-        # Verificar colisión con otros esqueletos
+        #verificar colisión con otros esqueletos
         for other in other_skeletons:
             if other is not self:
                 if (x < other.x + self.frame_size and x + self.frame_size > other.x and
                         y < other.y + self.frame_size and y + self.frame_size > other.y):
                     return True
 
-        # Verificar colisión con árboles
+        #verificar colisión con árboles
         for tree in world.trees:
             if (x < tree.x + tree.size and x + self.frame_size > tree.x and
                     y < tree.y + tree.size and y + self.frame_size > tree.y):
                 return True
 
-        # Verificar colisión con piedras pequeñas
+        #verificar colisión con piedras pequeñas
         for stone in world.small_stones:
             if (x < stone.x + stone.size and x + self.frame_size > stone.x and
                     y < stone.y + stone.size and y + self.frame_size > stone.y):
