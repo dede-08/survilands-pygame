@@ -9,8 +9,16 @@ class GameOverScreen:
         self.selected = 0
         self.font = pygame.font.Font("assets/fonts/Minecraft.ttf", 32)
 
+        #cargar imagen de fondo
+        self.background_image = pygame.image.load("assets/images/interface/background_gameover.png").convert()
+        self.background_image = pygame.transform.scale(self.background_image, (constants.WIDTH, constants.HEIGHT))
+
+
     def draw(self):
-        self.screen.fill((0, 0, 0))
+
+        # dibujar el fondo de la pantalla
+        self.screen.blit(self.background_image, (0, 0))
+
         title_font = pygame.font.Font("assets/fonts/Minecraft.ttf", 64)
         title = title_font.render("GAME OVER", True, constants.RED)
         self.screen.blit(title, (constants.WIDTH // 2 - title.get_width() // 2, 100))

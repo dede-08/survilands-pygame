@@ -1,11 +1,14 @@
 import pygame
 import sys
 import constants
+import random
+import math
 from character import Character
 from world import World
 from main_menu import MainMenu
 from controls_screen import ControlsScreen
 from game_over_screen import GameOverScreen
+from enemy import Skeleton
 
 #inicializar pygame
 pygame.init()
@@ -28,6 +31,7 @@ def game_loop():
     show_inventory = False
     show_coordinates = False
     status_update_timer = 0
+    skeletons = []
 
     camera_x = camera_y = 0
 
@@ -73,6 +77,21 @@ def game_loop():
         world.update(dt)
         world.update_time(dt)
 
+        # ─────────── ENEMIGOS: generar solo de noche ───────────
+        is_night = world.current_time < constants.DAWN_TIME or world.current_time > constants.DUKS_TIME
+
+        # Aparecen esqueletos solo de noche
+        if is_night and len(skeletons) < 5:
+            for _ in range(3):  # por ejemplo, 3 esqueletos
+                distance = random.randint(300, 600)  # distancia mínima y máxima
+                angle = random.uniform(0, 2 * 3.14159)  # ángulo aleatorio (en radianes)
+
+                spawn_x = character.x + int(distance * math.cos(angle))
+                spawn_y = character.y + int(distance * math.sin(angle))
+
+                skeletons.append(Skeleton(spawn_x, spawn_y))
+        # puedes ajustar la posición inicial
+
         status_update_timer += dt
         if status_update_timer >= constants.STATUS_UPDATE_INTERVAL:
             character.update_status(world)
@@ -88,6 +107,13 @@ def game_loop():
         world.draw(screen, camera_x, camera_y)
         character.draw(screen, camera_x, camera_y)
         character.draw_target_tile(screen, camera_x, camera_y)
+
+        # ─────────── DIBUJAR Y ACTUALIZAR ENEMIGOS ───────────
+        for skeleton in skeletons:
+            skeleton.move_towards_player(character, world, skeletons)
+            skeleton.update_animation()
+            skeleton.check_collision_with_player(character)
+            skeleton.draw(screen, camera_x, camera_y)
 
         if show_inventory:
             character.draw_inventory(screen)
