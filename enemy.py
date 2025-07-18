@@ -26,6 +26,8 @@ class Skeleton:
         self.animation_timer = 0
         self.health = 3
         self.speed = 1
+        self.disappearing = False
+        self.disappear_alpha = 255
 
     def load_animations(self):
         animations = {}
@@ -113,10 +115,25 @@ class Skeleton:
 
         return False
 
+    def start_disappearing(self):
+        self.disappearing = True
+        self.disappear_alpha = 255
+
+    def update_disappearance(self):
+        if self.disappearing:
+            self.disappear_alpha -= 10
+            if self.disappear_alpha <= 0:
+                return True  # señal para eliminar al esqueleto
+        return False
+
     def draw(self, screen, camera_x, camera_y):
         frame = self.animations[self.current_state][self.animation_frame]
         if getattr(self, "facing_left", False):
             frame = pygame.transform.flip(frame, True, False)
+
+        if self.disappearing:
+            frame = frame.copy()
+            frame.set_alpha(self.disappear_alpha)
 
         screen_x = self.x - camera_x
         screen_y = self.y - camera_y

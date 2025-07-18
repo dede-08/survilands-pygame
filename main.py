@@ -89,11 +89,18 @@ def game_loop():
                 spawn_y = character.y + int(distance * math.sin(angle))
                 skeletons.append(Skeleton(spawn_x, spawn_y))
             skeletons_spawned = True
-            print("Esqueletos generados")
 
+
+        #desaparecer esqueletos al amanecer
+        #if not is_night:
+        #    skeletons.clear()
+        #    skeletons_spawned = False
+
+        #al amanecer, iniciar desaparición en lugar de eliminar al instante
         if not is_night:
-            skeletons.clear()
-            skeletons_spawned = False
+            for skeleton in skeletons:
+                if not skeleton.disappearing:
+                    skeleton.start_disappearing()
 
         status_update_timer += dt
         if status_update_timer >= constants.STATUS_UPDATE_INTERVAL:
@@ -112,11 +119,25 @@ def game_loop():
         character.draw_target_tile(screen, camera_x, camera_y)
 
         #dibujar y actualizar enemigos
-        if is_night:
-            for skeleton in skeletons:
-                skeleton.move_towards_player(character, world, skeletons)
-                skeleton.update_animation()
-                skeleton.check_collision_with_player(character)
+        #if is_night:
+        #    for skeleton in skeletons:
+        #        skeleton.move_towards_player(character, world, skeletons)
+        #        skeleton.update_animation()
+        #        skeleton.check_collision_with_player(character)
+        #        skeleton.draw(screen, camera_x, camera_y)
+
+        # Dibujar y actualizar enemigos (tanto si es de noche o si aún están desapareciendo)
+        if is_night or skeletons:
+            for skeleton in skeletons[:]:  # iteramos sobre copia para poder remover
+                if not skeleton.disappearing:
+                    skeleton.move_towards_player(character, world, skeletons)
+                    skeleton.update_animation()
+                    skeleton.check_collision_with_player(character)
+                else:
+                    if skeleton.update_disappearance():
+                        skeletons.remove(skeleton)
+                        continue  # ya se desvaneció completamente
+
                 skeleton.draw(screen, camera_x, camera_y)
 
         if show_inventory:
